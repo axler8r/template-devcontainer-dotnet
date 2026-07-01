@@ -1,33 +1,35 @@
 # dotnet-devcontainer-template
 
-GitHub template repository for bootstrapping .NET projects inside a VS Code Dev Container.
+A bare .NET dev container scaffold for VS Code. Clone it, open it in a container,
+then scaffold your project with `dotnet new`.
 
-## Variants
+## Prerequisites
 
-Pick the branch that matches your project type and click **Use this template**.
-
-| Variant | Branch | Use case |
-|---|---|---|
-| ASP.NET Core Web API | `template/web-api` | REST APIs and HTTP services |
-| Class Library | `template/library` | Reusable .NET packages |
-| Console App | `template/console` | CLI tools and background workers |
+- [VS Code](https://code.visualstudio.com/)
+- [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+- Docker
 
 ## Usage
 
-1. Open the variant branch on GitHub.
-2. Click **Use this template → Create a new repository**.
-3. Clone your new repository.
-4. Open it in VS Code and select **Reopen in Container** when prompted.
-5. Rename the project: update the `src/<ProjectName>/` directory, `.csproj` filename, and namespace declarations throughout.
+1. Click **Use this template → Create a new repository** on GitHub.
+2. Clone your new repository.
+3. Open it in VS Code and select **Reopen in Container** when prompted.
+4. Wait for the container to build.
+5. Scaffold your project:
+
+   ```sh
+   dotnet new console -n MyApp -o src/MyApp    # Console App
+   dotnet new classlib -n MyLib -o src/MyLib   # Class Library
+   dotnet new webapi  -n MyApi -o src/MyApi    # ASP.NET Core Web API
+   ```
 
 ## What's included
 
-- `.devcontainer/Dockerfile` — .NET SDK, and a non-root `vscode` user
-- `.devcontainer/devcontainer.json` — VS Code extension declarations and `dotnet restore` on container open
-- `global.json` — SDK version pin
+- `.devcontainer/Dockerfile` — .NET 10 SDK installed via `dotnet-install.sh`; non-root `vscode` user (uid/gid 1000) provided by the base image
+- `.devcontainer/devcontainer.json` — C# Dev Kit and EditorConfig extensions; SDK path configured
+- `global.json` — pins SDK to `10.0.109` with `rollForward: latestPatch`
 - `.editorconfig` — standard .NET code style
 - `.gitignore` — standard .NET gitignore
-- A pre-scaffolded project in `src/<ProjectName>/`
 
 ## Licence
 

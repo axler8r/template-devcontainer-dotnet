@@ -158,17 +158,7 @@ git rm -rf .
 
 After `git rm -rf .`, the working tree is clean and the branch has no commits yet.
 
-- [ ] **Step 2: Determine the .NET 9.0 SDK patch version**
-
-Run on a machine with the Microsoft package feed configured, or inside a container based on `mcr.microsoft.com/devcontainers/base:ubuntu-24.04` after installing the feed:
-
-```bash
-apt-cache policy dotnet-sdk-9.0 | grep Candidate
-```
-
-Note the full version string (e.g. `9.0.300`). Use this value wherever `global.json` shows `9.0.300` in Steps 5, and carry it forward to Tasks 3 and 4.
-
-- [ ] **Step 3: Create `.devcontainer/Dockerfile`**
+- [ ] **Step 2: Create `.devcontainer/Dockerfile`**
 
 ```dockerfile
 FROM mcr.microsoft.com/devcontainers/base:ubuntu-24.04
@@ -184,7 +174,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 ```
 
-- [ ] **Step 4: Create `.devcontainer/devcontainer.json`**
+- [ ] **Step 3: Create `.devcontainer/devcontainer.json`**
 
 ```json
 {
@@ -204,20 +194,7 @@ RUN apt-get update \
 }
 ```
 
-- [ ] **Step 5: Create `global.json`**
-
-Replace `9.0.300` with the candidate version from Step 2:
-
-```json
-{
-  "sdk": {
-    "version": "9.0.300",
-    "rollForward": "latestPatch"
-  }
-}
-```
-
-- [ ] **Step 6: Create `.editorconfig`**
+- [ ] **Step 4: Create `.editorconfig`**
 
 ```ini
 root = true
@@ -234,23 +211,13 @@ trim_trailing_whitespace = true
 indent_size = 2
 ```
 
-- [ ] **Step 7: Generate `.gitignore`**
+- [ ] **Step 5: Copy `.gitignore` from stable**
 
 ```bash
-dotnet new gitignore
+git show stable:.gitignore > .gitignore
 ```
 
-If `dotnet` is not available on the host, copy the `.gitignore` from the `stable` branch — it is the standard .NET gitignore and is identical to what `dotnet new gitignore` produces.
-
-- [ ] **Step 8: Scaffold the Web API project**
-
-```bash
-dotnet new webapi -n Template.WebApi -o src/Template.WebApi
-```
-
-This generates a minimal ASP.NET Core Web API with OpenAPI enabled by default.
-
-- [ ] **Step 9: Create `.github/LICENSE`**
+- [ ] **Step 6: Create `.github/LICENSE`**
 
 ```
 MIT License
@@ -276,7 +243,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-- [ ] **Step 10: Create `README.md`**
+- [ ] **Step 7: Create `README.md`**
 
 ```markdown
 # Template.WebApi
@@ -319,23 +286,52 @@ dotnet test
 MIT — see [`.github/LICENSE`](.github/LICENSE).
 ```
 
-- [ ] **Step 11: Verify the Docker image builds**
+- [ ] **Step 8: Build image, pin SDK version, and scaffold project**
+
+Build the devcontainer image. The `.devcontainer` directory is the build context:
 
 ```bash
-docker build -f .devcontainer/Dockerfile . -t test-web-api-devcontainer
+docker build -f .devcontainer/Dockerfile .devcontainer -t template-web-api
 ```
 
-Expected: `Successfully built <image-id>` with no errors.
+Expected: no errors, image tagged `template-web-api`.
 
-- [ ] **Step 12: Verify the project builds**
+Get the exact SDK version installed in the image:
 
 ```bash
-dotnet build src/Template.WebApi
+docker run --rm template-web-api dotnet --version
+```
+
+Create `global.json` using the version string printed above (e.g. `9.0.315`):
+
+```json
+{
+  "sdk": {
+    "version": "9.0.315",
+    "rollForward": "latestPatch"
+  }
+}
+```
+
+Scaffold the Web API project inside the image, mounting the repo root:
+
+```bash
+docker run --rm -v "$(pwd)":/workspace -w /workspace template-web-api \
+  dotnet new webapi -n Template.WebApi -o src/Template.WebApi
+```
+
+Expected: `src/Template.WebApi/` created with `.csproj`, `Program.cs`, `appsettings*.json`, `Properties/launchSettings.json`.
+
+- [ ] **Step 9: Verify the project builds inside the image**
+
+```bash
+docker run --rm -v "$(pwd)":/workspace -w /workspace template-web-api \
+  dotnet build src/Template.WebApi
 ```
 
 Expected: `Build succeeded.`
 
-- [ ] **Step 13: Commit**
+- [ ] **Step 10: Commit**
 
 ```bash
 git add .devcontainer/ .editorconfig .gitignore .github/LICENSE global.json README.md src/
@@ -367,7 +363,7 @@ add:
 - Generate: `src/Template.Library/` (via `dotnet new classlib`)
 
 **Interfaces:**
-- Depends on: Task 2 Step 2 (SDK patch version for `global.json`)
+- Depends on: Task 2 Step 8 (SDK patch version — read from `template/web-api` branch: `git show template/web-api:global.json`)
 - Produces: Standalone orphan `template/library` branch usable as a GitHub template
 
 - [ ] **Step 1: Create an orphan branch**
@@ -379,17 +375,13 @@ git rm -rf .
 
 - [ ] **Step 2: Create `.devcontainer/Dockerfile`**
 
+.NET 10 is installed directly from Ubuntu's native `noble-updates` repo — no Microsoft packages feed needed.
+
 ```dockerfile
 FROM mcr.microsoft.com/devcontainers/base:ubuntu-24.04
 
 RUN apt-get update \
-    && apt-get install -y wget apt-transport-https \
-    && wget https://packages.microsoft.com/config/ubuntu/24.04/packages-microsoft-prod.deb \
-         -O /tmp/packages-microsoft-prod.deb \
-    && dpkg -i /tmp/packages-microsoft-prod.deb \
-    && rm /tmp/packages-microsoft-prod.deb \
-    && apt-get update \
-    && apt-get install -y dotnet-sdk-9.0 make \
+    && apt-get install -y dotnet-sdk-10.0 make \
     && rm -rf /var/lib/apt/lists/*
 ```
 
@@ -413,20 +405,7 @@ RUN apt-get update \
 }
 ```
 
-- [ ] **Step 4: Create `global.json`**
-
-Use the SDK patch version determined in Task 2 Step 2:
-
-```json
-{
-  "sdk": {
-    "version": "9.0.300",
-    "rollForward": "latestPatch"
-  }
-}
-```
-
-- [ ] **Step 5: Create `.editorconfig`**
+- [ ] **Step 4: Create `.editorconfig`**
 
 ```ini
 root = true
@@ -443,21 +422,13 @@ trim_trailing_whitespace = true
 indent_size = 2
 ```
 
-- [ ] **Step 6: Generate `.gitignore`**
+- [ ] **Step 5: Copy `.gitignore` from stable**
 
 ```bash
-dotnet new gitignore
+git show stable:.gitignore > .gitignore
 ```
 
-If `dotnet` is not available on the host, copy the `.gitignore` from the `stable` branch.
-
-- [ ] **Step 7: Scaffold the Class Library project**
-
-```bash
-dotnet new classlib -n Template.Library -o src/Template.Library
-```
-
-- [ ] **Step 8: Create `.github/LICENSE`**
+- [ ] **Step 6: Create `.github/LICENSE`**
 
 ```
 MIT License
@@ -483,7 +454,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-- [ ] **Step 9: Create `README.md`**
+- [ ] **Step 7: Create `README.md`**
 
 ```markdown
 # Template.Library
@@ -525,30 +496,49 @@ dotnet test
 MIT — see [`.github/LICENSE`](.github/LICENSE).
 ```
 
-- [ ] **Step 10: Verify the Docker image builds**
+- [ ] **Step 8: Build image, pin SDK version, and scaffold project**
 
 ```bash
-docker build -f .devcontainer/Dockerfile . -t test-library-devcontainer
+docker build -f .devcontainer/Dockerfile .devcontainer -t template-library
 ```
 
-Expected: `Successfully built <image-id>` with no errors.
+Create `global.json` — use the version from Task 2 (`git show template/web-api:global.json` confirms `10.0.109`):
 
-- [ ] **Step 11: Verify the project builds**
+```json
+{
+  "sdk": {
+    "version": "10.0.109",
+    "rollForward": "latestPatch"
+  }
+}
+```
+
+Scaffold the Class Library project. Run as the current host user to avoid root-owned files:
 
 ```bash
-dotnet build src/Template.Library
+docker run --rm -v "$(pwd)":/workspace -w /workspace --user "$(id -u):$(id -g)" template-library \
+  dotnet new classlib -n Template.Library -o src/Template.Library
+```
+
+Expected: `src/Template.Library/` created with `.csproj` and `Class1.cs`.
+
+- [ ] **Step 9: Verify the project builds inside the image**
+
+```bash
+docker run --rm -v "$(pwd)":/workspace -w /workspace --user "$(id -u):$(id -g)" template-library \
+  dotnet build src/Template.Library
 ```
 
 Expected: `Build succeeded.`
 
-- [ ] **Step 12: Commit**
+- [ ] **Step 10: Commit**
 
 ```bash
 git add .devcontainer/ .editorconfig .gitignore .github/LICENSE global.json README.md src/
 git commit -m "feat(library): scaffold .NET class library dev container template
 
 add:
-  - .devcontainer/Dockerfile — .NET 9 SDK on ubuntu-24.04 base with make
+  - .devcontainer/Dockerfile — .NET 10 SDK on ubuntu-24.04 base with make
   - .devcontainer/devcontainer.json — C# Dev Kit extensions, dotnet restore on open
   - global.json — .NET 9.0 SDK version pin with latestPatch rollforward
   - .editorconfig — standard .NET code style
@@ -573,7 +563,7 @@ add:
 - Generate: `src/Template.Console/` (via `dotnet new console`)
 
 **Interfaces:**
-- Depends on: Task 2 Step 2 (SDK patch version for `global.json`)
+- Depends on: Task 2 Step 8 (SDK patch version — read from `template/web-api` branch: `git show template/web-api:global.json`)
 - Produces: Standalone orphan `template/console` branch usable as a GitHub template
 
 - [ ] **Step 1: Create an orphan branch**
@@ -585,17 +575,13 @@ git rm -rf .
 
 - [ ] **Step 2: Create `.devcontainer/Dockerfile`**
 
+.NET 10 is installed directly from Ubuntu's native `noble-updates` repo — no Microsoft packages feed needed.
+
 ```dockerfile
 FROM mcr.microsoft.com/devcontainers/base:ubuntu-24.04
 
 RUN apt-get update \
-    && apt-get install -y wget apt-transport-https \
-    && wget https://packages.microsoft.com/config/ubuntu/24.04/packages-microsoft-prod.deb \
-         -O /tmp/packages-microsoft-prod.deb \
-    && dpkg -i /tmp/packages-microsoft-prod.deb \
-    && rm /tmp/packages-microsoft-prod.deb \
-    && apt-get update \
-    && apt-get install -y dotnet-sdk-9.0 make \
+    && apt-get install -y dotnet-sdk-10.0 make \
     && rm -rf /var/lib/apt/lists/*
 ```
 
@@ -619,20 +605,7 @@ RUN apt-get update \
 }
 ```
 
-- [ ] **Step 4: Create `global.json`**
-
-Use the SDK patch version determined in Task 2 Step 2:
-
-```json
-{
-  "sdk": {
-    "version": "9.0.300",
-    "rollForward": "latestPatch"
-  }
-}
-```
-
-- [ ] **Step 5: Create `.editorconfig`**
+- [ ] **Step 4: Create `.editorconfig`**
 
 ```ini
 root = true
@@ -649,21 +622,13 @@ trim_trailing_whitespace = true
 indent_size = 2
 ```
 
-- [ ] **Step 6: Generate `.gitignore`**
+- [ ] **Step 5: Copy `.gitignore` from stable**
 
 ```bash
-dotnet new gitignore
+git show stable:.gitignore > .gitignore
 ```
 
-If `dotnet` is not available on the host, copy the `.gitignore` from the `stable` branch.
-
-- [ ] **Step 7: Scaffold the Console project**
-
-```bash
-dotnet new console -n Template.Console -o src/Template.Console
-```
-
-- [ ] **Step 8: Create `.github/LICENSE`**
+- [ ] **Step 6: Create `.github/LICENSE`**
 
 ```
 MIT License
@@ -689,7 +654,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-- [ ] **Step 9: Create `README.md`**
+- [ ] **Step 7: Create `README.md`**
 
 ```markdown
 # Template.Console
@@ -731,32 +696,51 @@ dotnet run --project src/Template.Console
 MIT — see [`.github/LICENSE`](.github/LICENSE).
 ```
 
-- [ ] **Step 10: Verify the Docker image builds**
+- [ ] **Step 8: Build image, pin SDK version, and scaffold project**
 
 ```bash
-docker build -f .devcontainer/Dockerfile . -t test-console-devcontainer
+docker build -f .devcontainer/Dockerfile .devcontainer -t template-console
 ```
 
-Expected: `Successfully built <image-id>` with no errors.
+Create `global.json` — use the version from Task 2 (`git show template/web-api:global.json` confirms `10.0.109`):
 
-- [ ] **Step 11: Verify the project builds**
+```json
+{
+  "sdk": {
+    "version": "10.0.109",
+    "rollForward": "latestPatch"
+  }
+}
+```
+
+Scaffold the Console project. Run as the current host user to avoid root-owned files:
 
 ```bash
-dotnet build src/Template.Console
+docker run --rm -v "$(pwd)":/workspace -w /workspace --user "$(id -u):$(id -g)" template-console \
+  dotnet new console -n Template.Console -o src/Template.Console
+```
+
+Expected: `src/Template.Console/` created with `.csproj` and `Program.cs`.
+
+- [ ] **Step 9: Verify the project builds inside the image**
+
+```bash
+docker run --rm -v "$(pwd)":/workspace -w /workspace --user "$(id -u):$(id -g)" template-console \
+  dotnet build src/Template.Console
 ```
 
 Expected: `Build succeeded.`
 
-- [ ] **Step 12: Commit**
+- [ ] **Step 10: Commit**
 
 ```bash
 git add .devcontainer/ .editorconfig .gitignore .github/LICENSE global.json README.md src/
 git commit -m "feat(console): scaffold .NET console app dev container template
 
 add:
-  - .devcontainer/Dockerfile — .NET 9 SDK on ubuntu-24.04 base with make
+  - .devcontainer/Dockerfile — .NET 10 SDK on ubuntu-24.04 base with make
   - .devcontainer/devcontainer.json — C# Dev Kit extensions, dotnet restore on open
-  - global.json — .NET 9.0 SDK version pin with latestPatch rollforward
+  - global.json — .NET 10.0 SDK version pin with latestPatch rollforward
   - .editorconfig — standard .NET code style
   - .gitignore — standard .NET gitignore
   - .github/LICENSE — MIT licence

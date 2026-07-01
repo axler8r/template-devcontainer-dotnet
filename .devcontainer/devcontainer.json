@@ -1,0 +1,18 @@
+{
+  "name": ".NET",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "vscode",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csdevkit",
+        "editorconfig.editorconfig"
+      ],
+      "settings": {
+        "dotnet.dotnetPath": "/usr/local/dotnet-sdk/dotnet"
+      }
+    }
+  }
+}

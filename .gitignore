@@ -56,3 +56,6 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 
+# Internal development artefacts — not part of the template
+.superpowers/
+.claude/

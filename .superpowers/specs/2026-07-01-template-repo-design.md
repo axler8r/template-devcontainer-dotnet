@@ -60,9 +60,8 @@ Users rename the project name, namespace, and `.csproj` filename after cloning. 
 
 ### `Dockerfile`
 
-- Installs the .NET SDK via the official Microsoft package feed, version pinned to match `global.json`
-- Installs ZSH, `make`, `git`
-- Creates a non-root user `vscode` with uid/gid 1000
+- Installs `dotnet-sdk-10.0` and `make` via Ubuntu's native `noble-updates` repository (no Microsoft packages feed required)
+- ZSH, `git`, and non-root `vscode` user (uid/gid 1000) are provided by the base image
 - SDK installation placed early in the file to maximise layer cache reuse
 - No project restore or build steps in the image
 
