@@ -17,7 +17,7 @@ The repository has four branches:
 
 | Branch | Purpose |
 |---|---|
-| `stable` | Landing branch — README only, describes the template and links to all three variants |
+| `stable` | Landing branch — README, project infrastructure (`.gitignore`, `.github/LICENSE`, `.claude/`, `.superpowers/`), and links to all three variants |
 | `template/web-api` | Standalone ASP.NET Core Web API variant |
 | `template/library` | Standalone Class Library variant |
 | `template/console` | Standalone Console App variant |
@@ -126,6 +126,12 @@ Covers:
 2. How to use (click "Use this template", clone, reopen in container)
 3. Rename instructions (project name, namespace, `.csproj` filename)
 4. Common commands: `dotnet restore`, `dotnet build`, `dotnet test`, `dotnet run`
+
+---
+
+## Known Issues
+
+~~`.github/REAME.md` in the existing scaffold has a filename typo (missing `D`). Rename to `README.md` during implementation.~~ Resolved in Task 1.
 
 ---
 
