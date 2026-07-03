@@ -33,7 +33,17 @@ global.json           # Pins the .NET SDK version matched by the Dockerfile
 
 ## Specs and Plans
 
-Design specs are saved to `.superpowers/specs/YYYY-MM-DD-<topic>-design.md` in the project root.
+Specs and implementation plans are tracked as GitHub Issues (label: `spec`) on this repository.
+
+**Issue title format:** `<type>(<context>): <description>` — mirrors conventional commits.
+
+**Issue body template:**
+- `## Purpose` — why the change is needed
+- `## Scope` — what is in / out of scope
+- `## Design` — key decisions and constraints
+- `## Plan` — implementation checklist (added after design approval)
+
+Issues are opened at the start of a feature and closed automatically when the implementing PR merges (`Closes #N`).
 
 ## Key Conventions
 
