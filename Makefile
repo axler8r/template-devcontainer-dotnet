@@ -9,7 +9,7 @@ TEST_NAME :=
 
 # phony ------------------------------------------------------------->8---------
 .PHONY: help \
-        restore \
+        init restore \
         build run watch \
         format \
         publish \
@@ -30,6 +30,26 @@ help: ## Show this help message
 
 
 # setup targets ----------------------------------------------------->8---------
+init: ## Initialise project kind (api, library, cli, gui, worker)
+	@echo "Select project kind:" \
+		&& echo "  1) api     — ASP.NET Core Web API" \
+		&& echo "  2) library — class library" \
+		&& echo "  3) cli     — console application" \
+		&& echo "  4) gui     — desktop GUI (WPF / WinForms)" \
+		&& echo "  5) worker  — background worker service" \
+		&& read -p "Enter kind [1-5]: " choice \
+		&& case $$choice in \
+			1) kind=api ;; \
+			2) kind=library ;; \
+			3) kind=cli ;; \
+			4) kind=gui ;; \
+			5) kind=worker ;; \
+			*) echo "Invalid choice: $$choice" && exit 1 ;; \
+		esac \
+		&& { grep -v '^KIND=' .env 2>/dev/null; echo "KIND=$$kind"; } > .env.tmp \
+		&& mv .env.tmp .env \
+		&& echo "KIND=$$kind written to .env"
+
 restore: ## Restore NuGet packages
 	@echo "Restoring NuGet packages..."
 	$(DOTNET) restore $(SOLUTION)
