@@ -24,6 +24,13 @@ A completed template should provide:
 global.json           # Pins the .NET SDK version matched by the Dockerfile
 ```
 
+## Git Workflow
+
+- `stable` is the default branch — all PRs target `stable`.
+- Work on a WIP branch (`wip/YYYYMMDD-<slug>`).
+- When implementation is complete: push the WIP branch and open a PR against `stable`. Never merge locally.
+- After the PR is merged on GitHub: pull `stable` locally and delete the WIP branch.
+
 ## Specs and Plans
 
 Design specs are saved to `.superpowers/specs/YYYY-MM-DD-<topic>-design.md` in the project root.
