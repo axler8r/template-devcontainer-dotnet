@@ -4,6 +4,11 @@ DOTNET    ?= dotnet
 SOLUTION  := $(wildcard *.sln)
 TEST_NAME :=
 
+# usage: $(call env-upsert,KEY,VALUE) — upsert KEY into .env, preserving other lines
+define env-upsert
+{ grep -v '^$(1)=' .env 2>/dev/null; echo "$(1)=$(2)"; } > .env.tmp && mv .env.tmp .env
+endef
+
 -include .env
 
 
@@ -37,7 +42,7 @@ init: ## Initialise project kind (api, library, cli, gui, worker)
 		&& echo "  3) cli     — console application" \
 		&& echo "  4) gui     — desktop GUI (WPF / WinForms)" \
 		&& echo "  5) worker  — background worker service" \
-		&& read -p "Enter kind [1-5]: " choice \
+		&& read "choice?Enter kind [1-5]: " \
 		&& case $$choice in \
 			1) kind=api ;; \
 			2) kind=library ;; \
@@ -46,8 +51,7 @@ init: ## Initialise project kind (api, library, cli, gui, worker)
 			5) kind=worker ;; \
 			*) echo "Invalid choice: $$choice" && exit 1 ;; \
 		esac \
-		&& { grep -v '^KIND=' .env 2>/dev/null; echo "KIND=$$kind"; } > .env.tmp \
-		&& mv .env.tmp .env \
+		&& $(call env-upsert,KIND,$$kind) \
 		&& echo "KIND=$$kind written to .env"
 
 restore: ## Restore NuGet packages
@@ -105,6 +109,6 @@ clean: ## Clean build artefacts
 
 # utility targets --------------------------------------------------->8---------
 target: ## Set the run project path (writes RUN_PROJECT to .env)
-	@read -p "Enter run project path (e.g. src/MyApp/MyApp.csproj): " project \
-		&& echo "RUN_PROJECT=$$project" > .env \
+	@read "project?Enter run project path (e.g. src/MyApp/MyApp.csproj): " \
+		&& $(call env-upsert,RUN_PROJECT,$$project) \
 		&& echo "RUN_PROJECT written to .env"
