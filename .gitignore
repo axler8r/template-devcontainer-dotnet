@@ -61,3 +61,6 @@ nunit-*.xml
 # Internal development artefacts — not part of the template
 .superpowers/
 .claude/
+
+# Local dev container overrides (use .devcontainer/devcontainer.local.json.example as template)
+.devcontainer/devcontainer.local.json

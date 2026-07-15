@@ -26,10 +26,17 @@ global.json           # Pins the .NET SDK version matched by the Dockerfile
 
 ## Git Workflow
 
-- `stable` is the default branch — all PRs target `stable`.
+- `main` is the default branch — all PRs target `main`.
 - Work on a WIP branch (`wip/YYYYMMDD-<slug>`).
-- When implementation is complete: push the WIP branch and open a PR against `stable`. Never merge locally.
-- After the PR is merged on GitHub: pull `stable` locally and delete the WIP branch.
+- When implementation is complete: push the WIP branch and open a PR against `main`. Never merge locally.
+- After the PR is merged on GitHub: pull `main` locally and delete the WIP branch.
+
+Note: Some historical docs may still mention `stable`; treat those references as legacy.
+
+## Assistant Instruction Sources
+
+- GitHub Copilot canonical instructions are in `.github/copilot-instructions.md`.
+- This file remains Claude-specific guidance and may include details not consumed by Copilot.
 
 ## Specs and Plans
 

@@ -19,6 +19,7 @@ endef
         format \
         publish \
         test test-filter \
+		check-sdk-parity \
         clean \
         target
 
@@ -28,10 +29,11 @@ help: ## Show this help message
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9_.-]+:.*?## / {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 	@echo ""
 	@echo "Quick Start:"
-	@echo "  make target     # Set the run project"
-	@echo "  make restore    # Restore NuGet packages"
-	@echo "  make build      # Build the solution"
-	@echo "  make test       # Run tests"
+	@echo "  make target             # Set the run project"
+	@echo "  make restore            # Restore NuGet packages"
+	@echo "  make build              # Build the solution"
+	@echo "  make test               # Run tests"
+	@echo "  make check-sdk-parity   # Verify Dockerfile/global.json SDK parity"
 
 
 # setup targets ----------------------------------------------------->8---------
@@ -96,6 +98,21 @@ test-filter: ## Run a single test by name (usage: make test-filter TEST_NAME=MyT
 	@test -n "$(TEST_NAME)" || (echo "TEST_NAME is not set — usage: make test-filter TEST_NAME=MyTest" && exit 1)
 	@echo "Running test: $(TEST_NAME)..."
 	$(DOTNET) test $(SOLUTION) --filter "FullyQualifiedName~$(TEST_NAME)"
+
+check-sdk-parity: ## Verify SDK version parity between Dockerfile and global.json
+	@docker_sdk=$$(sed -n 's/^ENV DOTNET_SDK_VERSION=\([^[:space:]\\]*\).*/\1/p' .devcontainer/Dockerfile | head -n1); \
+	json_sdk=$$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' global.json | head -n1); \
+	if [[ -z "$$docker_sdk" || -z "$$json_sdk" ]]; then \
+		echo "Could not read SDK versions from .devcontainer/Dockerfile or global.json"; \
+		exit 1; \
+	fi; \
+	echo "Dockerfile SDK: $$docker_sdk"; \
+	echo "global.json SDK: $$json_sdk"; \
+	if [[ "$$docker_sdk" != "$$json_sdk" ]]; then \
+		echo "SDK mismatch: keep .devcontainer/Dockerfile and global.json in sync"; \
+		exit 1; \
+	fi; \
+	echo "SDK versions are aligned"
 
 
 # maintenance targets ----------------------------------------------->8---------

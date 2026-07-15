@@ -3,12 +3,25 @@
   "build": {
     "dockerfile": "Dockerfile"
   },
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "installOhMyZsh": true,
+      "configureZshAsDefaultShell": true,
+      "upgradePackages": false,
+      "username": "vscode"
+    }
+  },
   "remoteUser": "vscode",
   "customizations": {
     "vscode": {
       "extensions": [
         "ms-dotnettools.csdevkit",
-        "editorconfig.editorconfig"
+        "editorconfig.editorconfig",
+        "GitHub.copilot",
+        "GitHub.copilot-chat"
       ],
       "settings": {
         "dotnet.dotnetPath": "/usr/local/dotnet-sdk/dotnet"

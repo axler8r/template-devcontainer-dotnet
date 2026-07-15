@@ -13,7 +13,7 @@ Thank you for taking the time to contribute.
 2. Create a feature branch:
 
    ```sh
-   git flow feature start <short-description>
+   git checkout -b wip/YYYYMMDD-<short-description>
    ```
 
 3. Make your changes, committing frequently. Follow the
@@ -26,6 +26,7 @@ Thank you for taking the time to contribute.
    ```
 
 4. Push your branch and open a Pull Request against `main`.
+5. Do not merge locally; merge via GitHub after review and passing checks.
 
 ## Pull Request Expectations
 

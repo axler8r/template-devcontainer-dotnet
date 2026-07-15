@@ -26,10 +26,22 @@ then scaffold your project with `dotnet new`.
 ## What's included
 
 - `.devcontainer/Dockerfile` — .NET 10 SDK installed via `dotnet-install.sh`; non-root `vscode` user (uid/gid 1000) provided by the base image
-- `.devcontainer/devcontainer.json` — C# Dev Kit and EditorConfig extensions; SDK path configured
+- `.devcontainer/devcontainer.json` — development-only tooling via Dev Container Features (Python, GitHub CLI, ZSH productivity defaults) and VS Code extensions (C# Dev Kit, EditorConfig, GitHub Copilot, Copilot Chat)
+- `.devcontainer/devcontainer.local.json.example` — optional local override template for personal extensions/settings
 - `global.json` — pins SDK to `10.0.109` with `rollForward: latestPatch`
 - `.editorconfig` — standard .NET code style
 - `.gitignore` — standard .NET gitignore
+
+## Layering Contract
+
+- `.devcontainer/Dockerfile` contains only base OS, OS/runtime dependencies, implementation, and implementation dependencies.
+- `.devcontainer/devcontainer.json` contains development-only features and extensions that are not strictly required to run the implementation.
+- `.devcontainer/devcontainer.local.json` is optional, user-specific, and intentionally untracked.
+
+## Contributor Guidance
+
+- Contributor workflow and PR expectations: [`.github/CONTRIBUTING.md`](CONTRIBUTING.md)
+- GitHub Copilot repository instructions: [`.github/copilot-instructions.md`](copilot-instructions.md)
 
 ## Licence
 
