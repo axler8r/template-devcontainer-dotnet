@@ -34,9 +34,25 @@ then scaffold your project with `dotnet new`.
 
 ## Layering Contract
 
-- `.devcontainer/Dockerfile` contains only base OS, OS/runtime dependencies, implementation, and implementation dependencies.
-- `.devcontainer/devcontainer.json` contains development-only features and extensions that are not strictly required to run the implementation.
-- `.devcontainer/devcontainer.local.json` is optional, user-specific, and intentionally untracked.
+The SDLC components are split across three layers.
+
+**Implementation layer** — `.devcontainer/Dockerfile`:
+- The base OS
+- The runtime
+- The minimum OS and runtime dependencies required to run the implementation
+- The implementation and its dependencies
+
+**Development layer** — `.devcontainer/devcontainer.json`:
+- Python for scripting
+- GitHub Copilot
+- GitHub CLI
+- ZSH shell
+- ZSH productivity tooling
+- All the Visual Studio Code extensions needed to do development
+
+**Personal layer** — `.devcontainer/devcontainer.local.json`:
+- Developer-specific extensions and settings
+- Intentionally not version controlled; use `.devcontainer/devcontainer.local.json.example` as a starting point
 
 ## Contributor Guidance
 
