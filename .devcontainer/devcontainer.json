@@ -18,10 +18,11 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "ms-dotnettools.csdevkit",
-        "editorconfig.editorconfig",
         "GitHub.copilot",
-        "GitHub.copilot-chat"
+        "GitHub.copilot-chat",
+        "editorconfig.editorconfig",
+        "ms-dotnettools.csdevkit",
+        "ms-vscode.vscode-chat-customizations-evaluations"
       ],
       "settings": {
         "dotnet.dotnetPath": "/usr/local/dotnet-sdk/dotnet"

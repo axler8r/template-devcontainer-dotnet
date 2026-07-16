@@ -8,24 +8,25 @@
 ## Get latest from https://github.com/github/gitignore/blob/main/Dotnet.gitignore
 
 # Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
-x64/
-x86/
-[Ww][Ii][Nn]32/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
-bld/
 [Bb]in/
-[Oo]bj/
+[Dd]ebug/
+[Dd]ebugPublic/
 [Ll]og/
 [Ll]ogs/
+[Oo]bj/
+[Rr]elease/
+[Rr]eleases/
+[Ww][Ii][Nn]32/
+bld/
+dotnet/
+x64/
+x86/
 
 # .NET Core
-project.lock.json
 project.fragment.lock.json
+project.lock.json
 artifacts/
 
 # ASP.NET Scaffolding
@@ -33,6 +34,7 @@ ScaffoldingReadMe.txt
 
 # NuGet Packages
 *.nupkg
+
 # NuGet Symbol Packages
 *.snupkg
 
@@ -50,8 +52,8 @@ CodeCoverage/
 *.binlog
 
 # MSTest test Results
-[Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
+[Tt]est[Rr]esult*/
 
 # NUnit
 *.VisualState.xml
@@ -59,8 +61,7 @@ TestResult.xml
 nunit-*.xml
 
 # Internal development artefacts — not part of the template
-.superpowers/
-.claude/
+.scratchpad/
 
 # Local dev container overrides (use .devcontainer/devcontainer.local.json.example as template)
 .devcontainer/devcontainer.local.json
